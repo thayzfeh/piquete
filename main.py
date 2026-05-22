@@ -1,4 +1,7 @@
 import requests
+from bs4 import BeautifulSoup
+import re
+import turma
 
 def gen_cookies():
     with open('cookies.txt','r') as file:
@@ -22,11 +25,26 @@ session.cookies.update({
     'csrfptoken' : cookies["csrfptoken"]
 })
 
-response = session.get('https://grade.daconline.unicamp.br/')
+# 3. Busca
+data = {
+    't': 'alunos',
+    'nome': '',
+    'amigos': 'f',
+    'id_oferecimento': '374148',
+    'tpres': '1',
+    'p': '1',
+    'buscar': '',
+}
 
-print("Status:", response.status_code)
+response = session.post(
+    'https://grade.daconline.unicamp.br/ajax/busca.php',
+    data=data,
+    headers={
+        'X-CSRFP-TOKEN': cookies["csrfptoken"],
+        'X-Requested-With': 'XMLHttpRequest',
+        'Referer': 'https://grade.daconline.unicamp.br/oferecimento/374148/',
+    }
+)
 
-if "Thaís" in response.text:
-    print("✓ Cookies funcionando, sessão ativa!")
-else:
-    print("✗ Não autenticado, cookies provavelmente expiraram.")
+print(response.status_code)
+print(turma.get_courses_page(response))
