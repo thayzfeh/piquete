@@ -16,5 +16,5 @@ def get_courses_page(html):
             courses.append(course)
     return courses
 
-def get_course(code: str, letter: str):
+def get_course(code: str, students: int):
     pass
